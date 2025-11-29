@@ -50,6 +50,8 @@ const schema = defineSchema(
       estimatedSalary: v.string(),
       growthOutlook: v.string(), // e.g., "High", "Stable"
       difficulty: v.string(), // e.g., "Entry", "Mid", "Senior"
+      category: v.string(),
+      skillsToGrow: v.array(v.string()),
     }),
 
     goals: defineTable({
@@ -71,6 +73,39 @@ const schema = defineSchema(
       searchField: "title",
       filterFields: ["type"],
     }),
+    counselors: defineTable({
+      name: v.string(),
+      specialization: v.string(),
+      bio: v.string(),
+      experienceYears: v.number(),
+      rating: v.number(),
+      focusAreas: v.array(v.string()),
+      availability: v.array(v.string()),
+    }),
+    mentorshipSessions: defineTable({
+      userId: v.id("users"),
+      counselorId: v.id("counselors"),
+      sessionDate: v.number(),
+      goal: v.string(),
+      status: v.union(v.literal("scheduled"), v.literal("completed"), v.literal("cancelled")),
+      notes: v.optional(v.string()),
+    }).index("by_user_id", ["userId"]),
+    savedCareers: defineTable({
+      userId: v.id("users"),
+      careerPathId: v.id("careerPaths"),
+    })
+      .index("by_user_id", ["userId"])
+      .index("by_user_id_and_career_path_id", ["userId", "careerPathId"]),
+    assessments: defineTable({
+      userId: v.id("users"),
+      interests: v.array(v.string()),
+      strengths: v.array(v.string()),
+      focusAreas: v.array(v.string()),
+      recommendedCareers: v.array(v.string()),
+      confidenceScore: v.number(),
+      summary: v.string(),
+    }).index("by_user_id", ["userId"]),
+
   },
   {
     schemaValidation: false,
