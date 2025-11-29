@@ -114,8 +114,6 @@ export default function Dashboard({ defaultSection }: DashboardProps = {}) {
     }
   }, [authLoading, onboardingStatus, navigate]);
 
-  if (authLoading) return null;
-
   const completedGoals = goals?.filter((goal) => goal.status === "completed").length || 0;
   const totalGoals = goals?.length || 0;
   const goalProgress = totalGoals > 0 ? (completedGoals / totalGoals) * 100 : 0;
@@ -127,6 +125,9 @@ export default function Dashboard({ defaultSection }: DashboardProps = {}) {
     () => new Set(savedCareers?.map((entry) => entry.career._id)),
     [savedCareers],
   );
+
+  if (authLoading) return null;
+
   const latestAssessment = assessments?.[0];
 
   const insightText = selectedCareer
