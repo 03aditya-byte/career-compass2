@@ -56,14 +56,26 @@ export default function Dashboard({ defaultSection }: DashboardProps = {}) {
   const seedCounselors = useMutation(api.mentorship.seed);
   const bookSession = useMutation(api.mentorship.bookSession);
   const submitAssessment = useMutation(api.assessments.submit);
+const updateProfile = useMutation(api.profiles.updateProfile);
 
   const [isGoalDialogOpen, setIsGoalDialogOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedPathId, setSelectedPathId] = useState<Id<"careerPaths"> | null>(null);
   const [assessmentForm, setAssessmentForm] = useState({ interests: "", strengths: "", focusAreas: "" });
-  const [sessionForm, setSessionForm] = useState({ counselorId: "", sessionDate: "", goal: "" });
-  const [isAssessmentSubmitting, setIsAssessmentSubmitting] = useState(false);
-  const [isBookingSession, setIsBookingSession] = useState(false);
+const [sessionForm, setSessionForm] = useState({ counselorId: "", sessionDate: "", goal: "" });
+const [isAssessmentSubmitting, setIsAssessmentSubmitting] = useState(false);
+const [isBookingSession, setIsBookingSession] = useState(false);
+const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
+const [profileForm, setProfileForm] = useState({
+  headline: "",
+  currentRole: "",
+  targetRole: "",
+  experienceYears: "",
+  bio: "",
+  skills: "",
+  interests: "",
+});
+const [isProfileSaving, setIsProfileSaving] = useState(false);
 
   const overviewRef = useRef<HTMLDivElement>(null);
   const careersRef = useRef<HTMLDivElement>(null);
@@ -114,6 +126,19 @@ export default function Dashboard({ defaultSection }: DashboardProps = {}) {
   }, [careerPaths, selectedPathId]);
 
   useEffect(() => {
+    if (!profile) return;
+    setProfileForm({
+      headline: profile.headline ?? "",
+      currentRole: profile.currentRole ?? "",
+      targetRole: profile.targetRole ?? "",
+      experienceYears: profile.experienceYears?.toString() ?? "",
+      bio: profile.bio ?? "",
+      skills: profile.skills?.join(", ") ?? "",
+      interests: profile.interests?.join(", ") ?? "",
+    });
+  }, [profile]);
+
+  useEffect(() => {
     if (!authLoading && onboardingStatus && !onboardingStatus.isOnboarded) {
       navigate("/onboarding");
     }
@@ -144,6 +169,38 @@ export default function Dashboard({ defaultSection }: DashboardProps = {}) {
       .split(",")
       .map((item) => item.trim())
       .filter(Boolean);
+
+  const handleProfileSave = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const skills = sanitizeList(profileForm.skills);
+    const interests = sanitizeList(profileForm.interests);
+
+    if (skills.length === 0 || interests.length === 0) {
+      toast.error("Add at least one skill and interest.");
+      return;
+    }
+
+    setIsProfileSaving(true);
+    try {
+      const experienceYears = Number(profileForm.experienceYears);
+      await updateProfile({
+        headline: profileForm.headline.trim() || undefined,
+        currentRole: profileForm.currentRole.trim() || undefined,
+        targetRole: profileForm.targetRole.trim() || undefined,
+        experienceYears: Number.isNaN(experienceYears) ? undefined : experienceYears,
+        bio: profileForm.bio.trim() || undefined,
+        skills,
+        interests,
+      });
+      toast.success("Profile updated!");
+      setIsProfileDialogOpen(false);
+    } catch (error) {
+      console.error(error);
+      toast.error("Unable to update profile.");
+    } finally {
+      setIsProfileSaving(false);
+    }
+  };
 
   const handleAssessmentSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -227,6 +284,95 @@ export default function Dashboard({ defaultSection }: DashboardProps = {}) {
 
   return (
     <div className="min-h-screen bg-muted/30 p-4 md:p-8">
+      <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <form className="space-y-4" onSubmit={handleProfileSave}>
+            <DialogHeader>
+              <DialogTitle>Edit Profile</DialogTitle>
+              <p className="text-sm text-muted-foreground">
+                Refresh your professional snapshot to unlock sharper insights.
+              </p>
+            </DialogHeader>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="headline">Professional Headline</Label>
+                <Input
+                  id="headline"
+                  value={profileForm.headline}
+                  onChange={(e) => setProfileForm((prev) => ({ ...prev, headline: e.target.value }))}
+                  placeholder="Senior Product Manager"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="experienceYears">Experience (years)</Label>
+                <Input
+                  id="experienceYears"
+                  type="number"
+                  min="0"
+                  value={profileForm.experienceYears}
+                  onChange={(e) => setProfileForm((prev) => ({ ...prev, experienceYears: e.target.value }))}
+                  placeholder="5"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="currentRole">Current Role</Label>
+                <Input
+                  id="currentRole"
+                  value={profileForm.currentRole}
+                  onChange={(e) => setProfileForm((prev) => ({ ...prev, currentRole: e.target.value }))}
+                  placeholder="Product Lead"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="targetRole">Target Role</Label>
+                <Input
+                  id="targetRole"
+                  value={profileForm.targetRole}
+                  onChange={(e) => setProfileForm((prev) => ({ ...prev, targetRole: e.target.value }))}
+                  placeholder="Director of Product"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="skills">Key Skills (comma separated)</Label>
+              <Textarea
+                id="skills"
+                value={profileForm.skills}
+                onChange={(e) => setProfileForm((prev) => ({ ...prev, skills: e.target.value }))}
+                placeholder="Roadmapping, Analytics, Storytelling"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="interests">Interests (comma separated)</Label>
+              <Textarea
+                id="interests"
+                value={profileForm.interests}
+                onChange={(e) => setProfileForm((prev) => ({ ...prev, interests: e.target.value }))}
+                placeholder="AI, Mentorship, Startups"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="bio">Bio</Label>
+              <Textarea
+                id="bio"
+                value={profileForm.bio}
+                onChange={(e) => setProfileForm((prev) => ({ ...prev, bio: e.target.value }))}
+                placeholder="Summarize your journey, wins, and goals."
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="outline" onClick={() => setIsProfileDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isProfileSaving}>
+                {isProfileSaving ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
       <div className="max-w-6xl mx-auto space-y-10">
         <section ref={overviewRef} className="space-y-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -239,7 +385,7 @@ export default function Dashboard({ defaultSection }: DashboardProps = {}) {
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Button variant="outline" onClick={() => navigate("/profile")}>
+              <Button variant="outline" onClick={() => setIsProfileDialogOpen(true)} disabled={!profile}>
                 Edit Profile
               </Button>
               <Button onClick={() => navigate("/assessment")}>Assessment Hub</Button>
