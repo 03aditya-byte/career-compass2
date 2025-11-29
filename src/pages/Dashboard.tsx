@@ -26,7 +26,7 @@ import {
   Trophy,
   UserCheck,
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -82,10 +82,7 @@ const [isProfileSaving, setIsProfileSaving] = useState(false);
   const assessmentRef = useRef<HTMLDivElement>(null);
   const mentorsRef = useRef<HTMLDivElement>(null);
 
-  const savedCareerIds = useMemo(
-    () => new Set(savedCareers?.map((entry) => entry.career._id)),
-    [savedCareers],
-  );
+  const savedCareerIds = new Set(savedCareers?.map((entry) => entry.career._id) ?? []);
 
   useEffect(() => {
     if (!defaultSection) return;
