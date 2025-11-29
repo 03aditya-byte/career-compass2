@@ -19,8 +19,10 @@ import {
   Calendar,
   CheckCircle2,
   Circle,
+  GraduationCap,
   MessageSquare,
   Plus,
+  Shield,
   Sparkles,
   Target,
   Trophy,
@@ -163,6 +165,48 @@ const [isProfileSaving, setIsProfileSaving] = useState(false);
         latestAssessment.confidenceScore
       }% confidence.`
     : "Complete the assessment to receive curated recommendations.";
+
+  const isAdmin = user?.role === "admin";
+  const adminOptions: Array<{ label: string; detail: string }> = [
+    {
+      label: "Mentor roster",
+      detail: "Approve new counselors, refresh bios, and keep ratings current.",
+    },
+    {
+      label: "Feedback triage",
+      detail: "Review product notes to prioritize roadmap experiments.",
+    },
+    {
+      label: "Innovation telemetry",
+      detail: "Monitor experiment adoption and unblock teams quickly.",
+    },
+  ];
+  const studentHighlights: Array<{ label: string; detail: string }> = [
+    {
+      label: "Career explorer",
+      detail: "Compare curated paths, salary signals, and growth outlooks.",
+    },
+    {
+      label: "Mentor connect",
+      detail: "Book sessions with counselors and log action plans.",
+    },
+    {
+      label: "Innovation lab",
+      detail: "Run micro-experiments that turn insights into portfolio wins.",
+    },
+  ];
+
+  const handleAdminPanelAction = () => {
+    if (isAdmin) {
+      document.getElementById("admin-pulse")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    toast("Admin access is restricted — contact the Compass team to elevate your account.");
+  };
+
+  const handleStudentPanelAction = () => {
+    document.getElementById("career-spotlight")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const sanitizeList = (value: string) =>
     value
@@ -431,6 +475,65 @@ const [isProfileSaving, setIsProfileSaving] = useState(false);
               />
             </Card>
           </div>
+        </section>
+
+        <section className="grid gap-6 md:grid-cols-2">
+          <Card className="relative overflow-hidden">
+            <CardHeader className="space-y-2">
+              <Badge variant="outline" className="w-fit">
+                Admin Console
+              </Badge>
+              <div className="flex items-center gap-2">
+                <Shield className="h-5 w-5 text-primary" />
+                <CardTitle>Control Center</CardTitle>
+              </div>
+              <CardDescription>Track mentor supply, triage feedback, and ship experiments.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <ul className="space-y-3 text-sm text-muted-foreground">
+                {adminOptions.map((item) => (
+                  <li key={item.label} className="flex gap-2">
+                    <span className="mt-1 h-2 w-2 rounded-full bg-primary" />
+                    <div>
+                      <p className="font-semibold text-foreground">{item.label}</p>
+                      <p>{item.detail}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <Button onClick={handleAdminPanelAction} variant={isAdmin ? "default" : "secondary"} className="w-full">
+                {isAdmin ? "Open Admin Pulse" : "Request Admin Access"}
+              </Button>
+            </CardContent>
+          </Card>
+          <Card className="relative overflow-hidden">
+            <CardHeader className="space-y-2">
+              <Badge variant="outline" className="w-fit">
+                Student Workspace
+              </Badge>
+              <div className="flex items-center gap-2">
+                <GraduationCap className="h-5 w-5 text-primary" />
+                <CardTitle>Launchpad</CardTitle>
+              </div>
+              <CardDescription>Everything a learner needs to plan, experiment, and stay supported.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <ul className="space-y-3 text-sm text-muted-foreground">
+                {studentHighlights.map((item) => (
+                  <li key={item.label} className="flex gap-2">
+                    <span className="mt-1 h-2 w-2 rounded-full bg-secondary" />
+                    <div>
+                      <p className="font-semibold text-foreground">{item.label}</p>
+                      <p>{item.detail}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <Button className="w-full" onClick={handleStudentPanelAction}>
+                Explore Student Tools
+              </Button>
+            </CardContent>
+          </Card>
         </section>
 
         <section className="grid gap-6 lg:grid-cols-2">
@@ -870,7 +973,7 @@ const [isProfileSaving, setIsProfileSaving] = useState(false);
         </section>
 
         {user?.role === "admin" && (
-          <Card>
+          <Card id="admin-pulse">
             <CardHeader>
               <CardTitle>Admin Pulse</CardTitle>
               <CardDescription>Monitor platform health at a glance.</CardDescription>
