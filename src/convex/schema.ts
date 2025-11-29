@@ -32,12 +32,45 @@ const schema = defineSchema(
       role: v.optional(roleValidator), // role of the user. do not remove
     }).index("email", ["email"]), // index for the email. do not remove or modify
 
-    // add other tables here
+    profiles: defineTable({
+      userId: v.id("users"),
+      headline: v.optional(v.string()),
+      bio: v.optional(v.string()),
+      skills: v.array(v.string()),
+      interests: v.array(v.string()),
+      currentRole: v.optional(v.string()),
+      targetRole: v.optional(v.string()),
+      experienceYears: v.optional(v.number()),
+    }).index("by_user_id", ["userId"]),
 
-    // tableName: defineTable({
-    //   ...
-    //   // table fields
-    // }).index("by_field", ["field"])
+    careerPaths: defineTable({
+      title: v.string(),
+      description: v.string(),
+      requiredSkills: v.array(v.string()),
+      estimatedSalary: v.string(),
+      growthOutlook: v.string(), // e.g., "High", "Stable"
+      difficulty: v.string(), // e.g., "Entry", "Mid", "Senior"
+    }),
+
+    goals: defineTable({
+      userId: v.id("users"),
+      title: v.string(),
+      description: v.optional(v.string()),
+      status: v.union(v.literal("pending"), v.literal("in_progress"), v.literal("completed")),
+      deadline: v.optional(v.number()),
+      category: v.string(), // e.g., "Learning", "Networking", "Job Search"
+    }).index("by_user_id", ["userId"]),
+
+    resources: defineTable({
+      title: v.string(),
+      type: v.union(v.literal("course"), v.literal("article"), v.literal("video"), v.literal("tool")),
+      url: v.string(),
+      tags: v.array(v.string()),
+      description: v.optional(v.string()),
+    }).searchIndex("search_title", {
+      searchField: "title",
+      filterFields: ["type"],
+    }),
   },
   {
     schemaValidation: false,

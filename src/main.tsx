@@ -6,15 +6,16 @@ import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexReactClient } from "convex/react";
 import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router";
+import { BrowserRouter, Route, Routes, useLocation, Navigate } from "react-router";
 import "./index.css";
 import Landing from "./pages/Landing.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import Dashboard from "./pages/Dashboard.tsx";
+import Onboarding from "./pages/Onboarding.tsx";
+import { useAuth } from "@/hooks/use-auth";
 import "./types/global.d.ts";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
-
-
 
 function RouteSyncer() {
   const location = useLocation();
@@ -39,6 +40,14 @@ function RouteSyncer() {
   return null;
 }
 
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) return null; // Or a loading spinner
+  if (!isAuthenticated) return <Navigate to="/auth" />;
+  
+  return <>{children}</>;
+}
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -49,7 +58,23 @@ createRoot(document.getElementById("root")!).render(
           <RouteSyncer />
           <Routes>
             <Route path="/" element={<Landing />} />
-            <Route path="/auth" element={<AuthPage redirectAfterAuth="/" />} /> {/* TODO: change redirect after auth to correct page */}
+            <Route path="/auth" element={<AuthPage redirectAfterAuth="/dashboard" />} />
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/onboarding" 
+              element={
+                <ProtectedRoute>
+                  <Onboarding />
+                </ProtectedRoute>
+              } 
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
