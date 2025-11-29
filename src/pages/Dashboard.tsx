@@ -30,6 +30,9 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { FeedbackPanel } from "@/components/dashboard/FeedbackPanel";
+import { InnovationHub } from "@/components/dashboard/InnovationHub";
+import { SupportChatbot } from "@/components/dashboard/SupportChatbot";
 
 type DashboardProps = {
   defaultSection?: "overview" | "careers" | "assessment" | "mentors";
@@ -850,6 +853,20 @@ const [isProfileSaving, setIsProfileSaving] = useState(false);
               )}
             </CardContent>
           </Card>
+        </section>
+
+        <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+          <InnovationHub
+            insightText={insightText}
+            assessmentCallout={assessmentCallout}
+            selectedCareer={selectedCareer}
+            sessions={sessions ?? []}
+          />
+          <SupportChatbot />
+        </section>
+
+        <section className="grid gap-6">
+          <FeedbackPanel />
         </section>
 
         {user?.role === "admin" && (

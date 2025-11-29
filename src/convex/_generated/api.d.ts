@@ -17,6 +17,7 @@ import type * as assessments from "../assessments.js";
 import type * as auth_emailOtp from "../auth/emailOtp.js";
 import type * as auth from "../auth.js";
 import type * as careerPaths from "../careerPaths.js";
+import type * as feedback from "../feedback.js";
 import type * as goals from "../goals.js";
 import type * as http from "../http.js";
 import type * as mentorship from "../mentorship.js";
@@ -36,6 +37,7 @@ declare const fullApi: ApiFromModules<{
   "auth/emailOtp": typeof auth_emailOtp;
   auth: typeof auth;
   careerPaths: typeof careerPaths;
+  feedback: typeof feedback;
   goals: typeof goals;
   http: typeof http;
   mentorship: typeof mentorship;

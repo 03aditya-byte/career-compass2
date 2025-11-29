@@ -106,6 +106,16 @@ const schema = defineSchema(
       summary: v.string(),
     }).index("by_user_id", ["userId"]),
 
+    feedback: defineTable({
+      userId: v.id("users"),
+      rating: v.number(),
+      mood: v.string(),
+      category: v.string(),
+      message: v.string(),
+    })
+      .index("by_user_id", ["userId"])
+      .index("by_category", ["category"]),
+
   },
   {
     schemaValidation: false,
