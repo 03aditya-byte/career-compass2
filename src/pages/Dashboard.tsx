@@ -35,6 +35,8 @@ import { toast } from "sonner";
 import { FeedbackPanel } from "@/components/dashboard/FeedbackPanel";
 import { InnovationHub } from "@/components/dashboard/InnovationHub";
 import { SupportChatbot } from "@/components/dashboard/SupportChatbot";
+import { StudentPortalFeatures } from "@/components/dashboard/StudentPortalFeatures";
+import { AdminPortalFeatures } from "@/components/dashboard/AdminPortalFeatures";
 
 type DashboardProps = {
   defaultSection?: "overview" | "careers" | "assessment" | "mentors";
@@ -959,6 +961,29 @@ const [isProfileSaving, setIsProfileSaving] = useState(false);
             </CardContent>
           </Card>
         </section>
+
+        <section id="student-innovation" className="space-y-6">
+          <StudentPortalFeatures
+            profile={profile}
+            assessments={assessments ?? []}
+            selectedCareer={selectedCareer ?? null}
+            goals={goals ?? []}
+            savedCareers={savedCareers ?? []}
+            sessions={sessions ?? []}
+          />
+        </section>
+
+        {isAdmin && (
+          <section id="admin-innovation" className="space-y-6">
+            <AdminPortalFeatures
+              isAdmin={isAdmin}
+              sessions={sessions ?? []}
+              counselors={counselors ?? []}
+              careerPaths={careerPaths ?? []}
+              assessments={assessments ?? []}
+            />
+          </section>
+        )}
 
         <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
           <InnovationHub
