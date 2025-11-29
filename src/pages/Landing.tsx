@@ -1,7 +1,39 @@
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { ArrowRight, Compass, Target, TrendingUp, Users } from "lucide-react";
+import { ArrowRight, Compass, Target, TrendingUp, Users, Brain, FlaskConical, MessageSquare, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router";
+
+type InnovationHighlight = {
+  title: string;
+  description: string;
+  metric: string;
+  badge: string;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+};
+
+const innovationHighlights: InnovationHighlight[] = [
+  {
+    title: "AI Mentor Pairing",
+    description: "Our matcher blends your interests with mentor signals to tee up a focus-ready session in under a minute.",
+    metric: "Match <60s",
+    badge: "Mentor Graph",
+    icon: Brain,
+  },
+  {
+    title: "Micro-Experiment Lab",
+    description: "Launch guided 72-hour experiments that turn assessments into measurable portfolio wins.",
+    metric: "Fresh weekly",
+    badge: "Innovation Hub",
+    icon: FlaskConical,
+  },
+  {
+    title: "CompassCare Copilot",
+    description: "An on-page copilot that routes you to the right feature, drops reminders, and unblocks next steps 24/7.",
+    metric: "Live support",
+    badge: "CompassCare",
+    icon: MessageSquare,
+  },
+];
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -94,6 +126,38 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Innovation Highlights Section */}
+      <section className="py-20">
+        <div className="container mx-auto px-4 space-y-12">
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            <div className="max-w-2xl space-y-4">
+              <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1 text-sm font-semibold text-primary">
+                <Sparkles className="h-4 w-4" />
+                Working Innovation Stack
+              </div>
+              <h2 className="text-3xl font-bold">Ship experiments, activate mentors, stay supported.</h2>
+              <p className="text-muted-foreground">
+                These live capabilities power Career Compass today—each one unlocks inside the dashboard so you move from plans to proof quickly.
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 text-sm text-muted-foreground">
+              <span className="font-semibold text-foreground">Live telemetry</span>
+              <div className="flex flex-wrap gap-2">
+                <span className="rounded-full border px-3 py-1">Realtime mentor graph</span>
+                <span className="rounded-full border px-3 py-1">AI co-pilot</span>
+                <span className="rounded-full border px-3 py-1">Micro-sprint engine</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {innovationHighlights.map((highlight) => (
+              <InnovationHighlightCard key={highlight.title} {...highlight} onAction={() => navigate("/auth")} />
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20">
         <div className="container mx-auto px-4">
@@ -136,6 +200,39 @@ function FeatureCard({ icon, title, description }: { icon: React.ReactNode; titl
       </div>
       <h3 className="text-xl font-semibold mb-2">{title}</h3>
       <p className="text-muted-foreground">{description}</p>
+    </motion.div>
+  );
+}
+
+function InnovationHighlightCard({
+  icon: Icon,
+  title,
+  description,
+  metric,
+  badge,
+  onAction,
+}: InnovationHighlight & { onAction: () => void }) {
+  return (
+    <motion.div
+      whileHover={{ y: -6 }}
+      className="flex h-full flex-col rounded-2xl border bg-card/80 p-6 shadow-sm backdrop-blur"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span className="rounded-2xl bg-primary/10 p-3">
+            <Icon className="h-5 w-5 text-primary" />
+          </span>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-primary">{badge}</p>
+            <h3 className="text-xl font-semibold">{title}</h3>
+          </div>
+        </div>
+        <span className="text-sm text-muted-foreground">{metric}</span>
+      </div>
+      <p className="mt-4 flex-1 text-muted-foreground">{description}</p>
+      <Button variant="link" className="mt-4 px-0" onClick={onAction}>
+        Try it now <ArrowRight className="ml-2 h-4 w-4" />
+      </Button>
     </motion.div>
   );
 }
