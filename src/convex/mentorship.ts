@@ -62,6 +62,15 @@ export const bookSession = mutation({
 export const seed = mutation({
   args: {},
   handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+    const user = await ctx.db.get(userId);
+    if (user?.role !== "admin") {
+      throw new Error("Admin access required");
+    }
+
     const existing = await ctx.db.query("counselors").first();
     if (existing) return;
 

@@ -87,6 +87,7 @@ const [isProfileSaving, setIsProfileSaving] = useState(false);
   const assessmentRef = useRef<HTMLDivElement>(null);
   const mentorsRef = useRef<HTMLDivElement>(null);
 
+  const isAdmin = user?.role === "admin";
   const savedCareerIds = new Set(savedCareers?.map((entry) => entry.career._id) ?? []);
 
   useEffect(() => {
@@ -104,16 +105,18 @@ const [isProfileSaving, setIsProfileSaving] = useState(false);
   }, [defaultSection]);
 
   useEffect(() => {
+    if (!isAdmin) return;
     if (careerPaths && careerPaths.length === 0) {
       seedPaths();
     }
-  }, [careerPaths, seedPaths]);
+  }, [careerPaths, isAdmin, seedPaths]);
 
   useEffect(() => {
+    if (!isAdmin) return;
     if (counselors && counselors.length === 0) {
       seedCounselors();
     }
-  }, [counselors, seedCounselors]);
+  }, [counselors, isAdmin, seedCounselors]);
 
   useEffect(() => {
     if (!sessionForm.counselorId && counselors && counselors.length > 0) {
@@ -166,7 +169,6 @@ const [isProfileSaving, setIsProfileSaving] = useState(false);
       }% confidence.`
     : "Complete the assessment to receive curated recommendations.";
 
-  const isAdmin = user?.role === "admin";
   const adminOptions: Array<{ label: string; detail: string }> = [
     {
       label: "Mentor roster",
