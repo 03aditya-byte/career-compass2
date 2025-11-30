@@ -1,0 +1,1 @@
+{"type":"tool_call","tool_number":1,"tool_name":"readFilesToContextTool","input_args":{"file_paths":["src/convex/schema.ts","src/convex/auth.ts"],"replace_files_in_context":false},"results":""}
