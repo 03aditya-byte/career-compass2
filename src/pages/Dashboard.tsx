@@ -53,7 +53,7 @@ export default function Dashboard({ defaultSection }: DashboardProps = {}) {
   const categories = useQuery(api.careerPaths.listCategories);
   const savedCareers = useQuery(api.careerPaths.listSaved);
   const counselors = useQuery(api.mentorship.listCounselors);
-  const sessions = useQuery(api.mentorship.listSessions);
+  const sessions = useQuery(api.mentorship.listMentorships);
   const assessments = useQuery(api.assessments.list);
 
   const createGoal = useMutation(api.goals.create);
@@ -61,7 +61,7 @@ export default function Dashboard({ defaultSection }: DashboardProps = {}) {
   const seedPaths = useMutation(api.careerPaths.seed);
   const toggleSave = useMutation(api.careerPaths.toggleSave);
   const seedCounselors = useMutation(api.mentorship.seed);
-  const bookSession = useMutation(api.mentorship.bookSession);
+  const bookSession = useMutation(api.mentorship.bookMentorship);
   const submitAssessment = useMutation(api.assessments.submit);
 const updateProfile = useMutation(api.profiles.updateProfile);
 

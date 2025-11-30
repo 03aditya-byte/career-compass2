@@ -34,7 +34,7 @@ import {
 import { Doc, Id } from "@/convex/_generated/dataModel";
 
 type SessionWithCounselor = {
-  session: Doc<"mentorshipSessions">;
+  session: Doc<"mentorships">;
   counselor?: Doc<"counselors"> | null;
 };
 

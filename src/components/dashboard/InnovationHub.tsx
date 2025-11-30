@@ -8,7 +8,7 @@ type SessionSummary = {
   session: {
     goal: string;
     sessionDate: number;
-    status: string;
+    status: "scheduled" | "completed" | "cancelled";
   };
   counselor?: {
     name?: string;
