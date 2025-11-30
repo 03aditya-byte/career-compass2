@@ -9,14 +9,14 @@ export const listCounselors = query({
   },
 });
 
-export const listSessions = query({
+export const listMentorships = query({
   args: {},
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return [];
 
     const sessions = await ctx.db
-      .query("mentorshipSessions")
+      .query("mentorships")
       .withIndex("by_user_id", (q) => q.eq("userId", userId))
       .order("desc")
       .collect();
@@ -30,7 +30,7 @@ export const listSessions = query({
   },
 });
 
-export const bookSession = mutation({
+export const bookMentorship = mutation({
   args: {
     counselorId: v.id("counselors"),
     sessionDate: v.number(),
@@ -49,7 +49,7 @@ export const bookSession = mutation({
       throw new Error("Add a session goal");
     }
 
-    await ctx.db.insert("mentorshipSessions", {
+    await ctx.db.insert("mentorships", {
       userId,
       counselorId: args.counselorId,
       sessionDate: args.sessionDate,

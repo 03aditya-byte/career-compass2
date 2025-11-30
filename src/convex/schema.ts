@@ -82,7 +82,7 @@ const schema = defineSchema(
       focusAreas: v.array(v.string()),
       availability: v.array(v.string()),
     }),
-    mentorshipSessions: defineTable({
+    mentorships: defineTable({
       userId: v.id("users"),
       counselorId: v.id("counselors"),
       sessionDate: v.number(),
